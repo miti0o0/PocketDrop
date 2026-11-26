@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PocketDrop" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:colorAccent">@color/accent</item>
+    </style>
+    <color name="accent">#0A84FF</color>
+    <color name="window_background">#F2F2F7</color>
+    <color name="ic_launcher_background">#0A84FF</color>
+</resources>

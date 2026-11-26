@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<!-- iPhone: Share → Add to Home Screen opens this full-screen, like an app -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PocketDrop">
+<meta name="application-name" content="PocketDrop">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<title>PocketDrop</title>
+<style>
+  :root {
+    --bg: #F2F2F7; --card: #FFFFFF; --text: #1C1C1E; --muted: #6E6E73; --line: #E3E3E8;
+    --accent: #0A84FF; --accent-press: #0066CC; --ok: #30D158; --bad: #FF453A; --chip: #EBEBF0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #000000; --card: #1C1C1E; --text: #F5F5F7; --muted: #A1A1A6; --line: #2C2C2E; --chip: #2C2C2E; }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top)) 16px calc(120px + env(safe-area-inset-bottom)); }
+  header { display: flex; align-items: center; gap: 12px; margin: 4px 0 20px; }
+  header img { width: 48px; height: 48px; border-radius: 12px; }
+  h1 { font-size: 22px; margin: 0; }
+  .sub { color: var(--muted); font-size: 14px; }
+  .card { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  .card h2 { font-size: 15px; margin: 0 0 10px; }
+  .seg { display: flex; background: var(--chip); border-radius: 10px; padding: 3px; margin-bottom: 12px; }
+  .seg button { flex: 1; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 14px;
+    padding: 8px; border-radius: 8px; }
+  .seg button.on { background: var(--card); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+  input[type=text], select { width: 100%; font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; appearance: none; }
+  .pick { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 2px dashed var(--line);
+    border-radius: 12px; padding: 18px; color: var(--accent); font-weight: 600; background: transparent; font-size: 16px; }
+  #fileInput { display: none; }
+  ul { list-style: none; margin: 12px 0 0; padding: 0; }
+  li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  li .n { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  li .s { color: var(--muted); }
+  li button { border: 0; background: var(--chip); color: var(--muted); width: 26px; height: 26px; border-radius: 13px; font-size: 13px; }
+  .summary { color: var(--muted); font-size: 13px; margin-top: 8px; }
+  .bar-wrap { position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: linear-gradient(transparent, var(--bg) 30%); }
+  .send { display: block; width: 100%; max-width: 520px; margin: 0 auto; border: 0; border-radius: 14px; padding: 16px;
+    font: inherit; font-size: 17px; font-weight: 700; color: #fff; background: var(--accent); }
+  .send:active { background: var(--accent-press); }
+  .send:disabled { opacity: .4; }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: flex-end; justify-content: center; }
+  .overlay.show { display: flex; }
+  .sheet { background: var(--card); width: 100%; max-width: 520px; border-radius: 18px 18px 0 0;
+    padding: 22px 20px calc(22px + env(safe-area-inset-bottom)); text-align: center; }
+  .sheet h3 { margin: 6px 0 4px; font-size: 19px; }
+  .sheet p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+  .progress { height: 8px; background: var(--chip); border-radius: 4px; overflow: hidden; margin: 14px 0 8px; }
+  .progress div { height: 100%; width: 0; background: var(--accent); transition: width .15s; }
+  .big { font-size: 44px; line-height: 1; }
+  .ghost { border: 0; background: var(--chip); color: var(--text); font: inherit; font-weight: 600; padding: 12px 22px; border-radius: 12px; margin-top: 6px; }
+  .spinner { width: 40px; height: 40px; border: 4px solid var(--chip); border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 1s linear infinite; margin: 4px auto 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .install { display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: 14px;
+    padding: 12px 12px 12px 14px; margin-bottom: 14px; font-size: 14px; border: 1px solid var(--line); }
+  .install img { width: 40px; height: 40px; border-radius: 9px; flex: none; }
+  .install .txt { flex: 1; }
+  .install b { display: block; font-size: 15px; margin-bottom: 2px; }
+  .install svg { width: 15px; height: 15px; vertical-align: -2px; color: var(--accent); }
+  .install button { border: 0; background: var(--chip); color: var(--muted); width: 28px; height: 28px; border-radius: 14px; flex: none; }
+  body { touch-action: manipulation; }
+  button { -webkit-user-select: none; user-select: none; }
+  .hidden { display: none !important; }
+  .err { color: var(--bad); font-size: 14px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="/icon.png" alt="">
+    <div>
+      <h1>PocketDrop</h1>
+      <div class="sub" id="pcName">…</div>
+    </div>
+  </header>
+
+  <!-- Shown in iPhone/iPad Safari until the page is added to the Home Screen -->
+  <div class="install hidden" id="installHint">
+    <img src="/apple-touch-icon.png" alt="">
+    <div class="txt">
+      <b id="installTitle">Install as an app</b>
+      <span id="installText"></span>
+    </div>
+    <button type="button" id="installClose" aria-label="close">✕</button>
+  </div>
+
+  <section class="card">
+    <h2 data-t="files">Files</h2>
+    <button class="pick" id="pickBtn" type="button">＋ <span data-t="choose">Choose photos or files</span></button>
+    <input type="file" id="fileInput" multiple>
+    <ul id="fileList"></ul>
+    <div class="summary" id="summary"></div>
+  </section>
+
+  <section class="card">
+    <h2 data-t="folder">Folder on the PC</h2>
+    <div class="seg">
+      <button type="button" id="modeNew" class="on" data-t="newFolder">New folder</button>
+      <button type="button" id="modeExisting" data-t="existingFolder">Existing folder</button>
+    </div>
+    <input type="text" id="folderName" maxlength="80" autocomplete="off">
+    <select id="folderSelect" class="hidden"></select>
+    <div class="summary hidden" id="noFolders" data-t="noFolders">There are no folders yet.</div>
+  </section>
+
+  <div class="err hidden" id="error"></div>
+</main>
+
+<div class="bar-wrap">
+  <button class="send" id="sendBtn" disabled>PocketDrop</button>
+</div>
+
+<div class="overlay" id="sheet">
+  <div class="sheet">
+    <div id="sheetIcon"><div class="spinner"></div></div>
+    <h3 id="sheetTitle"></h3>
+    <p id="sheetText"></p>
+    <div class="progress hidden" id="progress"><div id="progressFill"></div></div>
+    <p id="progressText" class="hidden"></p>
+    <button class="ghost" id="sheetBtn"></button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const bg = (navigator.language || '').toLowerCase().startsWith('bg');
+  const T = bg ? {
+    files: 'Файлове', choose: 'Избери снимки или файлове', folder: 'Папка на компютъра',
+    newFolder: 'Нова папка', existingFolder: 'Съществуваща', noFolders: 'Все още няма папки.',
+    folderPlaceholder: 'Име на папката (по избор)', send: 'Изпрати към {0}', sendShort: 'Изпрати',
+    waiting: 'Чака потвърждение', waitingText: 'Приеми на компютъра „{0}“.', sending: 'Изпращане…',
+    done: 'Готово!', doneText: '{0} са в папка „{1}“.', declined: 'Отказано', declinedText: 'Компютърът отказа прехвърлянето.',
+    busy: 'Компютърът е зает', busyText: 'Друго прехвърляне е в ход. Опитай пак след малко.',
+    timeout: 'Няма отговор', timeoutText: 'Никой не потвърди на компютъра.', noSpace: 'Няма място', noSpaceText: 'Дискът на компютъра е пълен.',
+    failed: 'Грешка', failedText: 'Връзката с компютъра прекъсна.', cancelled: 'Отказано', cancelledText: 'Прехвърлянето беше отказано.',
+    cancel: 'Откажи', ok: 'OK', more: 'Изпрати още', oneFile: '1 файл', nFiles: '{0} файла', unreachable: 'Компютърът не отговаря. Отвори PocketDrop на компютъра.',
+    unreachableRemote: 'Компютърът не отговаря. Провери дали е пуснат и сканирай отново QR кода от „Отвсякъде“ в PocketDrop (линкът се сменя при всяко пускане).',
+    badKey: 'Този линк вече не важи. Сканирай новия QR код от „Отвсякъде“ в PocketDrop.', retrying: 'Слаб сигнал, опитвам пак…',
+    of: '{0} от {1}'
+  } : {
+    files: 'Files', choose: 'Choose photos or files', folder: 'Folder on the PC',
+    newFolder: 'New folder', existingFolder: 'Existing folder', noFolders: 'There are no folders yet.',
+    folderPlaceholder: 'Folder name (optional)', send: 'Drop to {0}', sendShort: 'Drop',
+    waiting: 'Waiting for the PC', waitingText: 'Accept the drop on “{0}”.', sending: 'Sending…',
+    done: 'Done!', doneText: '{0} saved in “{1}”.', declined: 'Declined', declinedText: 'The PC declined the drop.',
+    busy: 'PC is busy', busyText: 'Another transfer is running. Try again in a moment.',
+    timeout: 'No answer', timeoutText: 'Nobody accepted on the PC.', noSpace: 'Not enough space', noSpaceText: 'The PC’s disk is full.',
+    failed: 'Something went wrong', failedText: 'The connection to the PC was lost.', cancelled: 'Cancelled', cancelledText: 'The transfer was cancelled.',
+    cancel: 'Cancel', ok: 'OK', more: 'Send more', oneFile: '1 file', nFiles: '{0} files', unreachable: 'The PC is not answering. Open PocketDrop on the PC.',
+    unreachableRemote: 'The PC is not answering. Check that it is on, then scan the QR code under “From anywhere” in PocketDrop again (the link changes every time it starts).',
+    badKey: 'This link no longer works. Scan the new QR code under “From anywhere” in PocketDrop.', retrying: 'Weak signal, trying again…',
+    of: '{0} of {1}'
+  };
+  const f = (s, ...a) => s.replace(/\{(\d)\}/g, (_, i) => a[i]);
+  const $ = id => document.getElementById(id);
+  document.documentElement.lang = bg ? 'bg' : 'en';
+  document.querySelectorAll('[data-t]').forEach(el => el.textContent = T[el.dataset.t]);
+  $('folderName').placeholder = T.folderPlaceholder;
+
+  const size = b => {
+    const u = ['B', 'KB', 'MB', 'GB']; let i = 0; let v = b;
+    while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; }
+    return i === 0 ? b + ' B' : v.toFixed(v < 10 ? 1 : 0) + ' ' + u[i];
+  };
+  const count = n => n === 1 ? T.oneFile : f(T.nFiles, n);
+
+  let pcName = 'PC', files = [], mode = 'new', folders = [], xhr = null, sessionId = null, cancelled = false;
+
+  // "From anywhere": the link from the PC is https://….trycloudflare.com/?k=<secret>. Every API call carries the
+  // secret. The installed home-screen app starts with it too (the manifest's start_url includes it).
+  const key = (new URLSearchParams(location.search).get('k') || '').toLowerCase();
+  const remote = location.protocol === 'https:';
+  if (/^[0-9a-f]{32}$/.test(key)) document.querySelector('link[rel=manifest]').href = '/manifest.webmanifest?k=' + key;
+  const headers = (extra) => Object.assign(key ? { 'X-PocketDrop-Key': key } : {}, extra || {});
+  const api = (path, opts) => fetch(path, Object.assign({}, opts, { headers: headers(opts && opts.headers), cache: 'no-store' }));
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  // Smaller pieces through the internet: Cloudflare limits one request to 100 MB and mobile links drop.
+  const CHUNK = remote ? 8 * 1024 * 1024 : 32 * 1024 * 1024;
+
+  async function loadInfo() {
+    try {
+      const r = await api('/api/info');
+      if (r.status === 401) { showError(T.badKey); return; }
+      const info = await r.json();
+      pcName = info.name; $('pcName').textContent = info.name;
+      document.title = info.app + ' → ' + info.name;
+      hideError();
+    } catch { showError(remote ? T.unreachableRemote : T.unreachable); }
+    updateSend();
+  }
+
+  async function loadFolders() {
+    try {
+      folders = (await (await api('/api/folders')).json()).folders || [];
+    } catch { folders = []; }
+    const sel = $('folderSelect'); sel.innerHTML = '';
+    folders.forEach(x => { const o = document.createElement('option'); o.value = x.name; o.textContent = `${x.name}  (${x.files})`; sel.appendChild(o); });
+    updateMode();
+  }
+
+  function updateMode() {
+    $('modeNew').classList.toggle('on', mode === 'new');
+    $('modeExisting').classList.toggle('on', mode === 'existing');
+    $('folderName').classList.toggle('hidden', mode !== 'new');
+    $('folderSelect').classList.toggle('hidden', mode !== 'existing' || folders.length === 0);
+    $('noFolders').classList.toggle('hidden', mode !== 'existing' || folders.length > 0);
+    updateSend();
+  }
+
+  function renderFiles() {
+    const ul = $('fileList'); ul.innerHTML = '';
+    files.forEach((file, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="n"></span><span class="s"></span><button type="button" aria-label="remove">✕</button>';
+      li.querySelector('.n').textContent = file.name;
+      li.querySelector('.s').textContent = size(file.size);
+      li.querySelector('button').onclick = () => { files.splice(i, 1); renderFiles(); };
+      ul.appendChild(li);
+    });
+    const total = files.reduce((a, x) => a + x.size, 0);
+    $('summary').textContent = files.length ? `${count(files.length)} · ${size(total)}` : '';
+    updateSend();
+  }
+
+  function updateSend() {
+    const ok = files.length > 0 && !(mode === 'existing' && folders.length === 0);
+    $('sendBtn').disabled = !ok;
+    $('sendBtn').textContent = f(T.send, pcName);
+  }
+
+  function showError(msg) { $('error').textContent = msg; $('error').classList.remove('hidden'); }
+  function hideError() { $('error').classList.add('hidden'); }
+
+  function sheet({ icon, title, text, progress, button, onButton }) {
+    $('sheetIcon').innerHTML = icon === 'spin' ? '<div class="spinner"></div>' : `<div class="big">${icon}</div>`;
+    $('sheetTitle').textContent = title; $('sheetText').textContent = text || '';
+    $('progress').classList.toggle('hidden', !progress); $('progressText').classList.toggle('hidden', !progress);
+    $('sheetBtn').textContent = button; $('sheetBtn').onclick = onButton;
+    $('sheet').classList.add('show');
+  }
+  const closeSheet = () => $('sheet').classList.remove('show');
+
+  const reasons = {
+    declined: ['🚫', T.declined, T.declinedText], busy: ['⏳', T.busy, T.busyText], timeout: ['⌛', T.timeout, T.timeoutText],
+    no_space: ['💾', T.noSpace, T.noSpaceText], invalid: ['⚠️', T.failed, T.failedText], cancelled: ['🚫', T.cancelled, T.cancelledText],
+    failed: ['⚠️', T.failed, T.failedText]
+  };
+  function fail(reason) {
+    const [icon, title, text] = reasons[reason] || reasons.failed;
+    sheet({ icon, title, text, button: T.ok, onButton: closeSheet });
+  }
+
+  let offerAbort = null, ticket = null;
+
+  // Sends the offer and waits for the answer on the PC by asking every few seconds
+  // (one long request would be cut off by Cloudflare after 100 seconds).
+  async function offer(body) {
+    offerAbort = new AbortController();
+    const r = await api('/api/offer?wait=0', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: offerAbort.signal, body: JSON.stringify(body)
+    });
+    if (r.status === 401) return { accepted: false, reason: 'key' };
+    let res = await r.json();
+    if (!res.pending) return res;
+    ticket = res.ticket;
+    let misses = 0;
+    while (!cancelled) {
+      try {
+        const p = await api('/api/offer/' + ticket, { signal: offerAbort.signal });
+        res = await p.json(); misses = 0;
+        if (!res.pending) { ticket = null; return res; }
+      } catch (e) {
+        if (cancelled) break;
+        if (++misses > 6) throw e; // the PC keeps the question open ~50 s without us
+        await sleep(2000);
+      }
+    }
+    return { accepted: false, reason: 'cancelled' };
+  }
+
+  async function send() {
+    hideError(); cancelled = false; sessionId = null; ticket = null;
+    const folder = mode === 'new'
+      ? { mode: 'new', name: $('folderName').value.trim() }
+      : { mode: 'existing', name: $('folderSelect').value };
+    sheet({ icon: 'spin', title: T.waiting, text: f(T.waitingText, pcName), button: T.cancel, onButton: cancel });
+
+    let res;
+    try {
+      res = await offer({ folder, files: files.map(x => ({ name: x.name, size: x.size, modified: x.lastModified || null })) });
+    } catch { if (!cancelled) fail('failed'); return; }
+    if (cancelled) return;
+    if (res.reason === 'key') { closeSheet(); showError(T.badKey); return; }
+    if (!res.accepted) { fail(res.reason); return; }
+
+    sessionId = res.id;
+    const total = files.reduce((a, x) => a + x.size, 0);
+    let doneBytes = 0;
+    sheet({ icon: '📤', title: T.sending, text: `${count(files.length)} → ${res.folder}`, progress: true, button: T.cancel, onButton: cancel });
+    $('progressFill').style.width = '0%';
+
+    for (let i = 0; i < files.length; i++) {
+      const ok = await uploadFile(i, files[i], loaded => {
+        const p = total ? (doneBytes + loaded) / total : 1;
+        $('progressFill').style.width = (p * 100).toFixed(1) + '%';
+        $('progressText').textContent = `${i + 1}/${files.length} · ${f(T.of, size(doneBytes + loaded), size(total))}`;
+      });
+      if (!ok) { if (!cancelled) fail('failed'); else fail('cancelled'); return; }
+      doneBytes += files[i].size;
+    }
+
+    try {
+      const r = await (await api('/api/finish/' + sessionId, { method: 'POST' })).json();
+      if (!r.ok) { fail(r.error === 'cancelled' ? 'cancelled' : 'failed'); return; }
+      sheet({ icon: '✅', title: T.done, text: f(T.doneText, count(r.saved), r.folder), button: T.more,
+        onButton: () => { files = []; renderFiles(); closeSheet(); loadFolders(); } });
+    } catch { fail('failed'); }
+  }
+
+  // Sends a file in pieces. A piece that fails (weak signal) is sent again, a few times.
+  async function uploadFile(index, file, onProgress) {
+    let offset = 0;
+    do {
+      const end = Math.min(file.size, offset + CHUNK);
+      let status = 0;
+      for (let attempt = 0; attempt < 5 && !cancelled; attempt++) {
+        if (attempt > 0) { $('progressText').textContent = T.retrying; await sleep(1500 * attempt); }
+        status = await uploadPiece(index, offset, file.slice(offset, end), loaded => onProgress(offset + loaded));
+        if (status === 200 || status === 409 || status === 400) break;
+      }
+      if (status !== 200 || cancelled) return false;
+      offset = end;
+    } while (offset < file.size);
+    return true;
+  }
+
+  function uploadPiece(index, offset, blob, onProgress) {
+    return new Promise(resolve => {
+      xhr = new XMLHttpRequest();
+      xhr.open('POST', `/api/upload/${sessionId}/${index}?offset=${offset}`);
+      if (key) xhr.setRequestHeader('X-PocketDrop-Key', key);
+      xhr.upload.onprogress = e => onProgress(e.loaded);
+      xhr.onload = () => resolve(xhr.status);
+      xhr.onerror = xhr.ontimeout = () => resolve(0);
+      xhr.onabort = () => resolve(-1);
+      xhr.send(blob);
+    });
+  }
+
+  function cancel() {
+    cancelled = true;
+    if (offerAbort) offerAbort.abort();
+    if (xhr) xhr.abort();
+    if (ticket) api('/api/offer/' + ticket + '/cancel', { method: 'POST' }).catch(() => {});
+    if (sessionId) api('/api/cancel/' + sessionId, { method: 'POST' }).catch(() => {});
+    closeSheet();
+  }
+
+  // ---- "Add to Home Screen" hint (iPhone / iPad Safari) ----
+  const shareIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+  const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isStandalone = window.navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  let hintDismissed = false;
+  try { hintDismissed = localStorage.getItem('pd-install-hint') === 'off'; } catch {}
+  if (isIos && !isStandalone && !hintDismissed) {
+    $('installTitle').textContent = bg ? 'Добави като приложение' : 'Install as an app';
+    $('installText').innerHTML = bg
+      ? `Натисни ${shareIcon} <b style="display:inline;font-size:inherit">Сподели</b>, после <b style="display:inline;font-size:inherit">„Добави към начален екран“</b>.`
+      : `Tap ${shareIcon} <b style="display:inline;font-size:inherit">Share</b>, then <b style="display:inline;font-size:inherit">Add to Home Screen</b>.`;
+    $('installHint').classList.remove('hidden');
+  }
+  $('installClose').onclick = () => {
+    $('installHint').classList.add('hidden');
+    try { localStorage.setItem('pd-install-hint', 'off'); } catch {}
+  };
+
+  // Opened from the Home Screen: refresh when coming back to it.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && !$('sheet').classList.contains('show')) loadInfo();
+  });
+
+  $('pickBtn').onclick = () => $('fileInput').click();
+  $('fileInput').onchange = e => { files = files.concat(Array.from(e.target.files)); e.target.value = ''; renderFiles(); };
+  $('modeNew').onclick = () => { mode = 'new'; updateMode(); };
+  $('modeExisting').onclick = () => { mode = 'existing'; loadFolders(); };
+  $('sendBtn').onclick = send;
+
+  loadInfo(); loadFolders(); renderFiles();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_label">PocketDrop към компютъра</string>
+
+    <string name="send">Изпрати</string>
+    <string name="send_to">Изпрати към %1$s</string>
+
+    <string name="files">Файлове</string>
+    <string name="clear">Изчисти</string>
+    <string name="pick_photos">Снимки</string>
+    <string name="pick_files">Файлове</string>
+    <string name="no_files">Избери снимки, видеа или каквито и да е файлове — или използвай Сподели → PocketDrop от всяко приложение.</string>
+    <string name="remove">Премахни</string>
+    <string name="and_more">…и още %1$d</string>
+    <plurals name="file_count">
+        <item quantity="one">%1$d файл</item>
+        <item quantity="other">%1$d файла</item>
+    </plurals>
+
+    <string name="send_to_title">Изпрати към</string>
+    <string name="refresh">Обнови</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="wifi_none_found">Не е намерен компютър. Провери дали PocketDrop работи на компютъра и дали двете устройства са в една Wi-Fi мрежа.</string>
+    <string name="enter_address">Въведи адреса на компютъра</string>
+    <string name="enter_address_hint">Адресът се вижда в прозореца на PocketDrop на компютъра.</string>
+    <string name="add">Добави</string>
+    <string name="bt_no_adapter">Този телефон няма Bluetooth.</string>
+    <string name="bt_permission">PocketDrop има нужда от разрешение да се свързва със сдвоени устройства.</string>
+    <string name="allow">Разреши</string>
+    <string name="bt_off">Bluetooth е изключен.</string>
+    <string name="open_bt_settings">Настройки за Bluetooth</string>
+    <string name="bt_none_paired">Няма сдвоени устройства. Първо сдвои телефона с компютъра и включи Bluetooth в PocketDrop на компютъра.</string>
+    <string name="pair_pc">Сдвои нов компютър</string>
+
+    <string name="folder_title">Папка на компютъра</string>
+    <string name="new_folder">Нова папка</string>
+    <string name="existing_folder">Съществуваща</string>
+    <string name="folder_name">Име на папката</string>
+    <string name="folder_name_placeholder">напр. Почивка 2026</string>
+    <string name="folder_name_hint">Остави празно, за да се кръсти на датата и часа.</string>
+    <string name="pick_pc_first">Първо избери компютър.</string>
+    <string name="loading_folders">Зареждане на папките…</string>
+    <string name="folders_error">Папките не можаха да се заредят от компютъра.</string>
+    <string name="retry">Опитай пак</string>
+    <string name="no_folders">Все още няма папки на компютъра.</string>
+
+    <string name="connecting">Свързване с %1$s…</string>
+    <string name="waiting_title">Чака компютъра</string>
+    <string name="waiting_text">Потвърди на %1$s.</string>
+    <string name="sending_to">Изпращане към %1$s</string>
+    <string name="into_folder">Папка: %1$s</string>
+    <string name="progress_files">%1$d от %2$d</string>
+    <string name="progress_bytes">%1$s от %2$s</string>
+    <string name="done_title">Готово!</string>
+    <string name="done_text">%1$s изпратени към %2$s, папка „%3$s“.</string>
+    <string name="cancel">Откажи</string>
+    <string name="ok">OK</string>
+
+    <string name="err_declined_title">Отказано</string>
+    <string name="err_declined">Компютърът отказа прехвърлянето.</string>
+    <string name="err_busy_title">Компютърът е зает</string>
+    <string name="err_busy">Друго прехвърляне е в ход. Опитай пак след малко.</string>
+    <string name="err_timeout_title">Няма отговор</string>
+    <string name="err_timeout">Никой не потвърди на компютъра.</string>
+    <string name="err_space_title">Няма място</string>
+    <string name="err_space">На компютъра няма достатъчно свободно място.</string>
+    <string name="err_unreachable_title">Компютърът не отговаря</string>
+    <string name="err_unreachable">Провери дали PocketDrop работи на компютъра. За Wi-Fi двете устройства трябва да са в една мрежа; за Bluetooth компютърът трябва да е сдвоен и Bluetooth да е включен в PocketDrop.</string>
+    <string name="err_failed_title">Прехвърлянето прекъсна</string>
+    <string name="err_failed">Връзката с компютъра прекъсна. Завършените файлове са записани на компютъра.</string>
+</resources>
